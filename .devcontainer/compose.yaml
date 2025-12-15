@@ -1,35 +1,28 @@
----
 name: pretext_plus
+
 services:
   rails-app:
     build:
-      context: ".."
-      dockerfile: ".devcontainer/Dockerfile"
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+
     volumes:
     - "../..:/workspaces:cached"
     command: sleep infinity
+
+    # Uncomment the next line to use a non-root user for all processes.
+    # user: vscode
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
     depends_on:
-    - postgres
     - selenium
-    - redis
+    - postgres
+
   selenium:
     image: selenium/standalone-chromium
     restart: unless-stopped
-  db:
-    image: postgres:16
-    restart: unless-stopped
-    command: postgres -c "pg_stat_statements.track=all" -c "shared_preload_libraries=pg_stat_statements"
-    volumes:
-    - postgres-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
-  redis:
-    image: redis:7.2
-    restart: unless-stopped
-    volumes:
-    - redis-data:/data
+
   postgres:
     image: postgres:16.1
     restart: unless-stopped
@@ -38,8 +31,8 @@ services:
     volumes:
     - postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+
 volumes:
   postgres-data:
-  redis-data:

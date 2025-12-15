@@ -66,8 +66,8 @@ jobs:
         run: bin/rubocop -f github
 
   test:
-    runs:
-      using: 'docker'
+    runs-on: ubuntu-latest
+    container:
       image: '.devcontainer/Dockerfile'
     # services:
     #  redis:
@@ -92,8 +92,8 @@ jobs:
         run: bin/rails db:test:prepare test
 
   system-test:
-    runs:
-      using: 'docker'
+    runs-on: ubuntu-latest
+    container:
       image: '.devcontainer/Dockerfile'
 
     # services:

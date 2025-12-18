@@ -1,6 +1,6 @@
 <% content_for :title, "Projects" %>
 
-<div class="w-full">
+<div class="w-full mt-16 p-4">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
@@ -29,7 +29,7 @@
               </h3>
 
               <p class="mt-1 text-sm text-gray-700">
-                <%= project.content %>
+                Last updated: <%= project.updated_at %>
               </p>
             </span>
           </span>

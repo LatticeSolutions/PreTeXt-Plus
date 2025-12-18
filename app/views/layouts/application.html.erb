@@ -24,7 +24,7 @@
   </head>
 
   <body>
-    <nav class="bg-white px-6 py-4 shadow">
+    <nav class="bg-white px-6 py-4 shadow fixed w-full z-10 top-0 left-0 border-b border-gray-200 h-16">
         <div class="flex flex-col container mx-auto md:flex-row md:items-center md:justify-between">
             <div class="flex justify-between items-center">
                 <div>
@@ -49,7 +49,7 @@
             </div>
         </div>
     </nav>
-    <main class="container mx-auto mt-6 px-5 flex">
+    <main class="w-full flex">
       <%= yield %>
     </main>
   </body>

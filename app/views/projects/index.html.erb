@@ -1,6 +1,6 @@
 <% content_for :title, "Projects" %>
 
-<div class="w-full">
+<div class="w-full mt-16 p-4">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
@@ -13,7 +13,7 @@
   <div id="projects" class="min-w-full space-y-5">
     <% if @projects.any? %>
       <% @projects.each do |project| %>
-        <%= link_to project, class: "block rounded-xl bg-white p-4 m-3 ring-2 ring-gray-100 hover:ring-indigo-200 sm:p-6 lg:p-8" do %>
+        <%= link_to edit_project_path(project), class: "block rounded-xl bg-white p-4 m-3 ring-2 ring-gray-100 hover:ring-indigo-200 sm:p-6 lg:p-8" do %>
           <span class="flex items-start sm:gap-8">
             <span class="hidden sm:grid sm:size-20 sm:shrink-0 sm:place-content-center" aria-hidden="true">
               <%= image_tag "/icon.svg" %>
@@ -29,7 +29,7 @@
               </h3>
 
               <p class="mt-1 text-sm text-gray-700">
-                <%= project.content %>
+                Last updated: <%= project.updated_at %>
               </p>
             </span>
           </span>

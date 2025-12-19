@@ -23,7 +23,7 @@ module Authentication
 
     def resume_session
       session = Current.session ||= find_session_by_cookie
-      @current_user = session.user
+      @current_user = session&.user
       session
     end
 

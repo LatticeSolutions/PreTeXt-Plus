@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  resource :register
   resources :projects do
     get "share" => "projects#share"
   end

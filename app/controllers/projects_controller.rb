@@ -1,10 +1,12 @@
 class ProjectsController < ApplicationController
+  allow_unauthenticated_access only: :share
   before_action :set_project, only: %i[ show edit update destroy ]
+  before_action :limit_projects, only: %i[ new create ]
 
   # GET /projects or /projects.json
   def index
-    @projects = Project.where user: current_user
-    @invitations = Invitation.where owner_user: current_user, recipient_user: nil
+    @projects = Project.where user: @current_user
+    @invitations = Invitation.where owner_user: @current_user, recipient_user: nil
   end
 
   # GET /projects/1 or /projects/1.json
@@ -13,7 +15,19 @@ class ProjectsController < ApplicationController
 
   # GET /projects/new
   def new
-    @project = Project.new user: current_user
+    @project = Project.new user: @current_user, title: "New Project"
+    @project.content = <<-eos
+<p>Welcome to <em>PreTeXt.Plus!</em></p>
+<p>
+  This is a sample project to get you started. You can edit this content using the
+  PreTeXt markup language. For more information on how to use PreTeXt, please visit
+  <url href="https://pretextbook.org/doc/guide/html/">The PreTeXt Guide</url>.
+  <fn>Note: currently, PreTeXt.Plus only supports a subset of PreTeXt features, and only
+  allows authoring the content of an <c>&lt;article/&gt;</c>. We look forward to
+  expanding this in the future!</fn>
+</p>
+<p>Feel free to delete this sample content and start creating your own project. Happy writing!</p>
+    eos
   end
 
   # GET /projects/1/edit
@@ -23,11 +37,11 @@ class ProjectsController < ApplicationController
   # POST /projects or /projects.json
   def create
     @project = Project.new(project_params)
-    @project.update_attribute :user, current_user
+    @project.update_attribute :user, @current_user
 
     respond_to do |format|
       if @project.save
-        format.html { redirect_to projects_path, notice: "Project was successfully created." }
+        format.html { redirect_to @project, notice: "Project was successfully created." }
         format.json { render :show, status: :created, location: @project }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,10 +52,10 @@ class ProjectsController < ApplicationController
 
   # PATCH/PUT /projects/1 or /projects/1.json
   def update
-    @project.update_attribute :user, current_user
+    @project.update_attribute :user, @current_user
     respond_to do |format|
       if @project.update(project_params)
-        format.html { redirect_to projects_path, notice: "Project was successfully updated.", status: :see_other }
+        format.html { redirect_to @project, notice: "Project was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @project }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -60,6 +74,11 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def share
+    @project = Project.find(params.expect(:project_id))
+    render html: @project.html_source.html_safe
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_project
@@ -69,5 +88,12 @@ class ProjectsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def project_params
       params.expect(project: [ :title, :content ])
+    end
+
+    # redirect if user has too many projects
+    def limit_projects
+      if @current_user && @current_user.projects.count >= 10
+        redirect_to projects_path, alert: "You have reached the maximum number of projects allowed."
+      end
     end
 end

@@ -67,3 +67,11 @@ end
 gem "tailwindcss-rails", "~> 4.4"
 
 gem "jsbundling-rails", "~> 1.3"
+
+gem "pay", "~> 11.4"
+
+gem "stripe", "~> 18.1"
+
+gem "braintree", "~> 4.34"
+
+gem "receipts", "~> 2.4"

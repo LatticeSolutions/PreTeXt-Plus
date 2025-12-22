@@ -1,12 +1,16 @@
 <div class="mx-auto md:w-2/3 w-full pt-20">
   <h1 class="font-bold text-4xl">Register</h1>
-  <%= form_with model: @user, url: register_path do |form| %>
+  <%= form_with model: @user do |form| %>
     <% if form.object.errors.any? %>
       <div class="text-red-600">Error: <%= form.object.errors.full_messages.first %></div>
     <% end %>
 
     <div class="my-5">
-      <%= form.email_field :email, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      <%= form.text_field :name, required: true, autofocus: true, autocomplete: "Your Name", placeholder: "Enter your name", value: params[:email], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+    </div>
+
+    <div class="my-5">
+      <%= form.email_field :email, required: true, autofocus: true, autocomplete: "email@example.com", placeholder: "Enter your email address", value: params[:email], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
     </div>
 
     <div class="my-5">
@@ -18,7 +22,7 @@
     </div>
 
     <div class="inline">
-      <%= form.submit "Sign in", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+      <%= form.submit "Register and sign in", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
     </div>
   <% end %>
 </div>

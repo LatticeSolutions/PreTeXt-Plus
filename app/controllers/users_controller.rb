@@ -1,10 +1,7 @@
-class RegistersController < ApplicationController
+class UsersController < ApplicationController
   unauthenticated_access_only
 
-  def show
-    if @current_user.present?
-      redirect_to projects_path, notice: "You are already registered." and return
-    end
+  def new
     @user = User.new
   end
 
@@ -14,13 +11,13 @@ class RegistersController < ApplicationController
       start_new_session_for(@user)
       redirect_to projects_path, notice: "Welcome to PreTeXt.Plus!"
     else
-      render :show, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 
   private
 
   def sign_up_params
-    params.expect(user: [ :email, :password, :invite_code ])
+    params.expect(user: [ :email, :password, :name, :invite_code ])
   end
 end

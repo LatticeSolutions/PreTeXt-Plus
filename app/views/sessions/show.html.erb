@@ -16,4 +16,13 @@
       </div>
     </div>
   <% end %>
+  <div class="mt-4">
+    <h1 class="font-bold text-4xl">Subscriptions</h1>
+    <%= form_with url: subscribe_path do |form| %>
+      <%= button_tag type: "submit", 
+        class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 text-white inline-block font-medium cursor-pointer" do %>
+        Subscribe
+      <% end %>
+    <% end %>
+  </div>
 </div>

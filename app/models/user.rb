@@ -3,14 +3,21 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :projects, dependent: :destroy
 
-  normalizes :email_address, with: ->(e) { e.strip.downcase }
+  enum :subscription, { beta: 0, sustaining: 1 }, suffix: true
 
-  validates_uniqueness_of :email_address
+  normalizes :email, with: ->(e) { e.strip.downcase }
+
+  validates_uniqueness_of :email
 
   attr_accessor :invite_code
 
   before_create :validate_invite_code
   after_create_commit :expire_invite
+
+  def project_quota
+    return 100 if self.sustaining_subscription?
+    10
+  end
 
   private
 
@@ -29,5 +36,10 @@ class User < ApplicationRecord
       throw :abort
     end
     valid_invite.update!(recipient_user_id: self.id)
+  end
+
+  def pay_should_sync_customer?
+    # super will invoke Pay's default (e-mail changed)
+    super || self.saved_change_to_name?
   end
 end

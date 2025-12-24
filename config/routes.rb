@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
-  resource :register
+  resources :users, only: [ :new, :create, :update ]
   resources :projects do
     get "share" => "projects#share"
   end
+  post "subscribe" => "subscriptions#subscribe"
   get "projects/:id/article.html", to: redirect("/projects/%{id}/share")
   get "*root/external/icon.svg", to: redirect("/icon-small.svg")
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

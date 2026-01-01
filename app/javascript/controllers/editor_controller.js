@@ -28,7 +28,6 @@ export default class extends Controller {
     }
 
     const onPreviewRebuild = async (content, title, postToIframe) => {
-      console.log('foo')
       const token = tokenField.value;
       const postData = { source: content, title: title, token: token };
       postToIframe('https://build.pretext.plus', postData);

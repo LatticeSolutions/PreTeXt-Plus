@@ -3,6 +3,8 @@ class SubscriptionsController < ApplicationController
   before_action :setup_payload, only: [ :webhooks ]
   before_action :setup_signature_header, only: [ :webhooks ]
   before_action :setup_endpoint_secret, only: [ :webhooks ]
+  skip_before_action :verify_authenticity_token, only: [ :webhooks ]
+  allow_unauthenticated_access only: :webhooks
 
   def subscribe
     require "stripe"
@@ -44,7 +46,35 @@ class SubscriptionsController < ApplicationController
       render json: { error: "Invalid signature" }, status: 400 and return
     end
 
-    handle_event
+
+    case @event.type
+    when "customer.created"
+      customer = @event.data.object
+      user = User.find_by email: customer.email
+      if user.present?
+        user.update stripe_customer_id: customer.id
+      else
+        render json: { error: "Invalid customer" }, status: 400 and return
+      end
+    when "customer.subscription.created"
+      customer_id = @event.data.object.customer
+      user = User.find_by stripe_customer_id: customer_id
+      if user.present?
+        user.update subscription: :sustaining
+      else
+        render json: { error: "Invalid customer" }, status: 400 and return
+      end
+    when "customer.subscription.deleted"
+      customer_id = @event.data.object.customer
+      user = User.find_by stripe_customer_id: customer_id
+      if user.present?
+        user.update subscription: :beta
+      else
+        render json: { error: "Invalid customer" }, status: 400 and return
+      end
+    else
+      Rails.logger.info("Unhandled event type: #{@event.type}")
+    end
 
     render json: { message: "Success" }, status: 200
   end
@@ -65,22 +95,5 @@ class SubscriptionsController < ApplicationController
 
   def setup_endpoint_secret
     @endpoint_secret = ENV["STRIPE_WEBHOOK_SECRET"]
-  end
-
-  def handle_event
-    case @event.type
-    when "customer.subscription.updated"
-      handle_subscription_updated(@event.data.object)
-    else
-      Rails.logger.info("Unhandled event type: #{@event.type}")
-    end
-  end
-
-  def handle_subscription_updated(subscription)
-    if event.type == "customer.subscription.deleted"
-      # handle subscription canceled automatically based
-      # upon your subscription settings. Or if the user cancels it.
-      puts "Subscription canceled: #{event.id}"
-    end
   end
 end

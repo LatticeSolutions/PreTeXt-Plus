@@ -41,9 +41,18 @@
                 <%= link_to :root, class: "my-1 text-gray-800 hover:text-blue-500 md:mx-4 md:my-0" do %>
                   About
                 <% end %>
+                <% if @current_user&.admin %>
+                  <%= link_to new_invitation_path, class: "my-1 text-gray-800 hover:text-blue-500 md:mx-4 md:my-0" do %>
+                    Invitations
+                  <% end %>
+                <% end %>
                 <% if @current_user.present? %>
                   <%= link_to :session, class: "my-1 text-gray-800 hover:text-blue-500 md:mx-4 md:my-0" do %>
                     Account (<%= @current_user.email %>)
+                  <% end %>
+                <% else %>
+                  <%= link_to tryit_path, class: "my-1 text-gray-800 hover:text-blue-500 md:mx-4 md:my-0" do %>
+                    Try it!
                   <% end %>
                 <% end %>
             </div>

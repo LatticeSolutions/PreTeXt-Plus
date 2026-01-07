@@ -18,7 +18,7 @@ class PasswordsController < ApplicationController
   end
 
   def update
-    if @user.update(params.permit(:password, :password_confirmation))
+    if @user.update(params.permit(:password))
       @user.sessions.destroy_all
       start_new_session_for @user
       redirect_to projects_path, notice: "Password has been reset. You are now logged in."

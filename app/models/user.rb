@@ -14,6 +14,10 @@ class User < ApplicationRecord
     Invitation.where(recipient_user: self).exists?
   end
 
+  def requested_invitation?
+    Request.where(user: self).exists?
+  end
+
   def project_quota
     return 10_000 if self.admin
     return 0 unless self.invited?

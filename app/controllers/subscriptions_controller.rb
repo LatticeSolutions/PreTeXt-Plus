@@ -11,7 +11,7 @@ class SubscriptionsController < ApplicationController
     Stripe.api_key = ENV["STRIPE_SECRET_KEY"]
     success_url = "https://#{request.host}/session"
     if @current_user.stripe_checkout_session_id.blank?
-      alert = CGI.escape "Your subscription has successfully been created!"
+      notice = CGI.escape "Your subscription has successfully been created!"
       session = Stripe::Checkout::Session.create({
         line_items: [ {
           price: ENV["STRIPE_SUSTAINING_PRICE"],
@@ -19,17 +19,17 @@ class SubscriptionsController < ApplicationController
         } ],
         customer_email: @current_user.email,
         mode: "subscription",
-        success_url: "#{success_url}?alert=#{alert}"
+        success_url: "#{success_url}?notice=#{notice}"
       })
       @current_user.update stripe_checkout_session_id: session.id
     else
-      alert = CGI.escape "Your subscription has been successfully managed!"
+      notice = CGI.escape "Your subscription has been successfully managed!"
       checkout_session = Stripe::Checkout::Session.retrieve(
         @current_user.stripe_checkout_session_id
       )
       session = Stripe::BillingPortal::Session.create({
         customer: checkout_session.customer,
-        return_url: "#{success_url}?alert=#{alert}"
+        return_url: "#{success_url}?notice=#{notice}"
       })
     end
     redirect_to session.url, allow_other_host: true

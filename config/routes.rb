@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :users, only: [ :new, :create, :update ]
   resources :invitations, only: [ :new, :create ]
+  post "invitations/redeem" => "invitations#redeem", as: :redeem_invitation
   resources :projects do
     get "share" => "projects#share"
   end

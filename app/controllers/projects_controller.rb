@@ -3,6 +3,7 @@ class ProjectsController < ApplicationController
   require_unauthenticated_access only: :tryit
   before_action :set_project, only: %i[ show edit update destroy ]
   before_action :limit_projects, only: %i[ new create ]
+  before_action :require_ownership, only: %i[ show edit update destroy ]
 
   # GET /projects or /projects.json
   def index
@@ -96,7 +97,7 @@ class ProjectsController < ApplicationController
   # POST /projects or /projects.json
   def create
     @project = Project.new(project_params)
-    @project.update_attribute :user, @current_user
+    @project.user = @current_user
 
     respond_to do |format|
       if @project.save
@@ -111,7 +112,6 @@ class ProjectsController < ApplicationController
 
   # PATCH/PUT /projects/1 or /projects/1.json
   def update
-    @project.update_attribute :user, @current_user
     respond_to do |format|
       if @project.update(project_params)
         format.html { redirect_to @project, notice: "Project was successfully updated.", status: :see_other }
@@ -153,6 +153,12 @@ class ProjectsController < ApplicationController
     def limit_projects
       if @current_user.projects.count >= @current_user.project_quota
         redirect_to projects_path, alert: "Project quota (#{@current_user.project_quota}) cannot be exceeded"
+      end
+    end
+
+    def require_ownership
+      if @project.user != @current_user and !@current_user.admin?
+        redirect_to projects_path, alert: "You do not have permission to access this project"
       end
     end
 end

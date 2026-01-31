@@ -60,4 +60,27 @@
       </div>
     </div>
   <% end %>
+
+  <% if @requests.present? %>
+  <%= form_with url: invitations_path, class: "py-4" do |form| %>
+
+    <h1 class="font-bold text-4xl mb-4">Accept request (<%= @request_count %>)</h1>
+
+    <%= form.hidden_field :mode, value: "accept_request" %>
+
+    <div class="my-5">
+      <%= form.label :user_id do %>Requesting User<% end %>
+      <%= form.select :user_id, 
+        options_from_collection_for_select(@requests.map(&:user), :id, :name_with_email, params[:user_id]),
+        { required: true },
+        class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+    </div>
+
+    <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
+      <div class="inline">
+        <%= form.submit "Accept request", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+      </div>
+    </div>
+  <% end %>
+  <% end %>
 </div>

@@ -3,6 +3,7 @@ class Invitation < ApplicationRecord
   belongs_to :recipient_user, class_name: "User", required: false
 
   before_save :fill_intended_email
+  after_create_commit :destroy_old_requests
 
   validate :intended_email_matches_recipient
 
@@ -19,6 +20,12 @@ class Invitation < ApplicationRecord
   def fill_intended_email
     if self.recipient_user.present? and self.intended_email.blank?
       self.intended_email = self.recipient_user.email
+    end
+  end
+
+  def destroy_old_requests
+    if self.recipient_user.present?
+      Request.where(user: self.recipient_user).destroy_all
     end
   end
 

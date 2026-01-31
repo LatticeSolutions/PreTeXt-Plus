@@ -1,8 +1,10 @@
 class InvitationsController < ApplicationController
   def new
     unless @current_user.admin
-      redirect_to projects_path, alert: "You are not authorized"
+      redirect_to projects_path, alert: "You are not authorized" and return
     end
+    @request_count = Request.count
+    @requests = Request.order(created_at: :asc).limit(50)
   end
 
   def create
@@ -52,6 +54,15 @@ class InvitationsController < ApplicationController
         InvitationsMailer.invite(email, u).deliver_later
       end
       redirect_to projects_path, notice: "Invited all specified emails"
+    elsif mode == "accept_request"
+      user = User.find params[:user_id]
+      if user.blank?
+        flash[:notice] = "User cannot be blank"
+        render :new, status: :unprocessable_entity and return
+      end
+      Invitation.create! owner_user: @current_user, recipient_user: user
+      InvitationsMailer.invite(user.email, user).deliver_later
+      redirect_to projects_path, notice: "Invited requesting user"
     else
       flash[:notice] = "Invalid mode"
       render :new, status: :unprocessable_entity and return

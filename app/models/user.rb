@@ -20,6 +20,14 @@ class User < ApplicationRecord
     Request.where(user: self).exists?
   end
 
+  def name_with_email
+    if self.name.present?
+      "#{self.name} <#{self.email}>"
+    else
+      self.email
+    end
+  end
+
   def project_quota
     return 10_000 if self.admin
     return 0 unless self.invited?
